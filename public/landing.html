@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeatherGlobe</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: black;
+      color: white;
+    }
+
+    #globeViz {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .title {
+      position: absolute;
+      top: 2.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      text-align: center;
+      font-size: 3.4rem;
+      font-weight: 900;
+      color: #fff;
+      font-family: 'SF Pro Rounded', 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      letter-spacing: -1.2px;
+      text-shadow: 0 4px 32px rgba(0,0,0,0.13), 0 2px 8px #fff8, 0 0px 60px #b2f0ff44;
+      background: linear-gradient(90deg, #f8fafc 10%, #b2f0ff 60%, #e0e7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+      border-radius: 28px;
+      padding: 0.35em 2.2em 0.45em 2.2em;
+      box-shadow: 0 4px 32px 0 rgba(0,0,0,0.07);
+      margin-bottom: 0.5em;
+    }
+
+    .title span {
+      display: block;
+      font-size: 1.02rem;
+      font-weight: 400;
+      margin-top: 1.1rem;
+      opacity: 0.92;
+      color: #b2eaff;
+      font-family: 'SF Pro Text', 'SF Pro Rounded', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      letter-spacing: 0.18em;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.10);
+      background: linear-gradient(90deg, #b2f0ff 0%, #e0e7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      border-radius: 16px;
+      padding: 0.18em 1.2em;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -20px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    .content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      text-align: center;
+      width: 100%;
+      transition: opacity 0.5s ease;
+    }
+
+    .content.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .buttons button {
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .buttons button:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+    }
+
+    .buttons button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .buttons button:hover::after {
+      width: 200%;
+      height: 200%;
+    }
+
+    .search-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .search-container input {
+      padding: 0.8rem;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+      width: 200px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .search-container input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    }
+
+    .search-container button {
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: rgba(0, 123, 255, 0.6);
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .search-container button:hover {
+      background: rgba(0, 123, 255, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+    }
+
+    /* Loading animation */
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: aqua;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Transition overlay */
+    .transition-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, transparent 0%, black 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1000;
+      transition: opacity 1s ease;
+    }
+
+    .transition-overlay.active {
+      opacity: 1;
+    }
+
+    /* City name display */
+    .city-name {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: white;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+      opacity: 0;
+      z-index: 1001;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 1rem 2rem;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .city-name.active {
+      opacity: 1;
+    }
+
+    .city-name .pin {
+      font-size: 1.8rem;
+      animation: bounce 0.5s ease;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <div class="title">
+    WeatherGlobe
+    <span>Explore weather around the world</span>
+  </div>
+
+  <div id="globeViz"></div>
+  <div class="transition-overlay"></div>
+  <div class="city-name"></div>
+
+  <div class="content">
+    <div class="buttons">
+      <button onclick="selectCity('New Delhi')"> New Delhi</button>
+      <button onclick="selectCity('Paris')">Paris</button>
+      <button onclick="selectCity('New York')">New York</button>
+      <button onclick="selectCity('London')">London</button>
+      <button onclick="selectCity('Tokyo')">Tokyo</button>
+    </div>
+    <div class="search-container">
+      <input type="text" id="cityInput" placeholder="Enter city name..." />
+      <button onclick="searchCity()">Search City</button>
+    </div>
+    <br /><br />
+    <div class="search-container">
+      <input type="number" id="latInput" step="any" placeholder="Latitude" />
+      <input type="number" id="lonInput" step="any" placeholder="Longitude" />
+      <button onclick="searchByCoords()">Search by Coords</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/three@0.150.1/build/three.min.js"></script>
+  <script src="https://unpkg.com/globe.gl"></script>
+
+  <script>
+    // Show loading animation
+    const loading = document.querySelector('.loading');
+    
+    const cities = [
+      { name: 'New Delhi', lat: 28.6139, lng: 77.2090 },
+      { name: 'Paris', lat: 48.8566, lng: 2.3522 },
+      { name: 'New York', lat: 40.7128, lng: -74.0060 },
+      { name: 'London', lat: 51.5074, lng: -0.1278 },
+      { name: 'Tokyo', lat: 35.6895, lng: 139.6917 }
+    ];
+
+    const globeContainer = document.getElementById('globeViz');
+    globeContainer.style.width = '100vw';
+    globeContainer.style.height = '100vh';
+
+    // Store initial globe position and settings
+    const initialGlobePosition = { lat: 20, lng: 0, altitude: 2 };
+    const initialGlobeSettings = {
+      pointAltitude: 0.01,
+      pointRadius: 0.5
+    };
+
+    const globe = Globe()(globeContainer)
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+      .backgroundColor('rgba(0,0,0,0)')
+      .pointsData(cities)
+      .pointLat(d => d.lat)
+      .pointLng(d => d.lng)
+      .pointAltitude(initialGlobeSettings.pointAltitude)
+      .pointRadius(initialGlobeSettings.pointRadius)
+      .pointColor(() => 'aqua')
+      .pointLabel(d => d.name)
+      .onGlobeReady(() => {
+        // Hide loading animation when globe is ready
+        setTimeout(() => {
+          loading.classList.add('hidden');
+        }, 500);
+      });
+
+    // Add hover effect to points
+    globe.onPointHover(point => {
+      if (point) {
+        globe.pointRadius(d => d === point ? 1 : 0.5);
+      } else {
+        globe.pointRadius(initialGlobeSettings.pointRadius);
+      }
+    });
+
+    globe.controls().autoRotate = true;
+    globe.controls().autoRotateSpeed = 0.3;
+    globe.pointOfView(initialGlobePosition);
+
+    // Add cleanup function
+    function cleanupTransition() {
+      const overlay = document.querySelector('.transition-overlay');
+      const cityDisplay = document.querySelector('.city-name');
+      const content = document.querySelector('.content');
+      
+      // Reset all elements
+      overlay.classList.remove('active');
+      cityDisplay.classList.remove('active');
+      cityDisplay.innerHTML = '';
+      content.classList.remove('hidden');
+
+      // Reset globe position and settings
+      globe
+        .pointAltitude(initialGlobeSettings.pointAltitude)
+        .pointRadius(initialGlobeSettings.pointRadius)
+        .pointOfView(initialGlobePosition, 1000);
+    }
+
+    // Handle browser back button
+    window.addEventListener('pageshow', function(event) {
+      if (event.persisted) {
+        cleanupTransition();
+      }
+    });
+
+    // Handle page unload
+    window.addEventListener('beforeunload', cleanupTransition);
+
+    function animateTransition(cityName, callback) {
+      const overlay = document.querySelector('.transition-overlay');
+      const cityDisplay = document.querySelector('.city-name');
+      const content = document.querySelector('.content');
+      
+      // Hide all UI elements
+      content.classList.add('hidden');
+      
+      // Display city name with pin emoji
+      cityDisplay.innerHTML = `<span class="pin">📍</span>${cityName}`;
+      cityDisplay.classList.add('active');
+      
+      // Start zoom animation
+      setTimeout(() => {
+        overlay.classList.add('active');
+        
+        // After transition completes, execute callback
+        setTimeout(() => {
+          cleanupTransition(); // Clean up before redirect
+          callback();
+        }, 500);
+      }, 500);
+    }
+
+    function selectCity(city) {
+      const cityData = cities.find(c => c.name === city);
+      if (cityData) {
+        // First zoom to the city
+        globe.pointOfView({ lat: cityData.lat, lng: cityData.lng, altitude: 0.3 }, 1500); // Reduced from 2000ms to 1500ms
+        
+        // After zoom completes, start transition animation
+        setTimeout(() => {
+          animateTransition(city, () => {
+            window.location.href = `index.html?city=${encodeURIComponent(city)}`;
+          });
+        }, 1500); // Reduced from 2000ms to 1500ms
+      }
+    }
+
+    function searchCity() {
+      const city = document.getElementById('cityInput').value;
+      if (city) {
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.length > 0) {
+              const lat = parseFloat(data[0].lat);
+              const lon = parseFloat(data[0].lon);
+              
+              const newCity = {
+                name: city,
+                lat: lat,
+                lng: lon
+              };
+              cities.push(newCity);
+              
+              globe.pointsData(cities);
+              globe.pointOfView({ lat: lat, lng: lon, altitude: 0.3 }, 1500); // Reduced from 2000ms to 1500ms
+              
+              setTimeout(() => {
+                animateTransition(city, () => {
+                  window.location.href = `index.html?city=${encodeURIComponent(city)}`;
+                });
+              }, 1500); // Reduced from 2000ms to 1500ms
+            } else {
+              alert('City not found. Please try another city name.');
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching city coordinates:', error);
+            alert('Error searching for city. Please try again.');
+          });
+      }
+    }
+
+    function searchByCoords() {
+      const lat = parseFloat(document.getElementById('latInput').value);
+      const lon = parseFloat(document.getElementById('lonInput').value);
+      if (!isNaN(lat) && !isNaN(lon)) {
+        const locationName = `Location (${lat}, ${lon})`;
+        const newLocation = {
+          name: locationName,
+          lat: lat,
+          lng: lon
+        };
+        cities.push(newLocation);
+        
+        globe.pointsData(cities);
+        globe.pointOfView({ lat: lat, lng: lon, altitude: 0.3 }, 1500); // Reduced from 2000ms to 1500ms
+        
+        setTimeout(() => {
+          animateTransition(locationName, () => {
+            window.location.href = `index.html?lat=${lat}&lon=${lon}`;
+          });
+        }, 1500); // Reduced from 2000ms to 1500ms
+      }
+    }
+  </script>
+</body>
+</html>
