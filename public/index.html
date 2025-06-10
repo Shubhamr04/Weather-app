@@ -416,7 +416,7 @@
         // After zoom completes, start transition animation
         setTimeout(() => {
           animateTransition(city, () => {
-            window.location.href = `index.html?city=${encodeURIComponent(city)}`;
+            window.location.href = `main.html?city=${encodeURIComponent(city)}`;
           });
         }, 1500); 
       }
@@ -444,7 +444,7 @@
               
               setTimeout(() => {
                 animateTransition(city, () => {
-                  window.location.href = `index.html?city=${encodeURIComponent(city)}`;
+                  window.location.href = `main.html?city=${encodeURIComponent(city)}`;
                 });
               }, 1500); 
             } else {
@@ -475,7 +475,7 @@
         
         setTimeout(() => {
           animateTransition(locationName, () => {
-            window.location.href = `index.html?lat=${lat}&lon=${lon}`;
+            window.location.href = `main.html?lat=${lat}&lon=${lon}`;
           });
         }, 1500); // Reduced from 2000ms to 1500ms
       }
