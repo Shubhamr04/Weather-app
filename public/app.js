@@ -1,3 +1,7 @@
+// --- Map Feature ---
+let mainMap = null;
+let mainMapMarker = null;
+
 // DOM Elements
 const cityInput = document.getElementById('cityInput');
 const searchBtn = document.getElementById('searchBtn');
@@ -43,8 +47,53 @@ const API_BASE_URL = 'http://localhost:3000/api';
 
 let currentUnits = 'metric';
 
-// On page load, try geolocation
 window.addEventListener('DOMContentLoaded', () => {
+    // DOM Elements
+    const cityInput = document.getElementById('cityInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const locationBtn = document.getElementById('locationBtn');
+    const cityName = document.getElementById('cityName');
+    const date = document.getElementById('date');
+    const temp = document.getElementById('temp');
+    const feelsLike = document.getElementById('feelsLike');
+    const windSpeed = document.getElementById('windSpeed');
+    const humidity = document.getElementById('humidity');
+    const pressure = document.getElementById('pressure');
+    const forecast = document.getElementById('forecast');
+    const aqiValue = document.getElementById('aqiValue');
+    const aqiDescription = document.getElementById('aqiDescription');
+    const sunrise = document.getElementById('sunrise');
+    const sunset = document.getElementById('sunset');
+    const uvIndex = document.getElementById('uvIndex');
+    const weatherAlerts = document.getElementById('weatherAlerts');
+    const hourlyForecast = document.getElementById('hourlyForecast');
+    const unitToggle = document.getElementById('unitToggle');
+    const unitLabel = document.getElementById('unitLabel');
+    const animatedIcon = document.getElementById('animatedIcon');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const searchHistoryList = document.getElementById('searchHistory');
+    const bookmarksList = document.getElementById('bookmarks');
+    const favoritesGrid = document.getElementById('favoritesGrid');
+    const compareMetrics = document.getElementById('compareMetrics');
+    const compareTrendChart = document.getElementById('compareTrendChart');
+    const compareCity1 = document.getElementById('compareCity1');
+    const compareCity2 = document.getElementById('compareCity2');
+    const compareResults = document.getElementById('compareResults');
+    const compareBtn = document.getElementById('compareBtn');
+    const micBtn = document.getElementById('micBtn');
+    const spinner = document.getElementById('spinner');
+
+    // Chart instances
+    let tempChart = null;
+    let humidityChart = null;
+    let compareChartInstance = null;
+
+    // API Base URL
+    const API_BASE_URL = 'http://localhost:3000/api';
+
+    let currentUnits = 'metric';
+
+    // On page load, try geolocation
     const params = new URLSearchParams(window.location.search);
     const city = params.get('city');
     const lat = params.get('lat');
@@ -66,86 +115,86 @@ window.addEventListener('DOMContentLoaded', () => {
             renderSearchHistory();
         };
     }
-});
 
-unitToggle.addEventListener('change', () => {
-    currentUnits = unitToggle.checked ? 'imperial' : 'metric';
-    unitLabel.textContent = unitToggle.checked ? '°F' : '°C';
-    // Re-fetch weather for current city or location
-    if (window.lastCoords) {
-        getAllWeatherByCoords(window.lastCoords.lat, window.lastCoords.lon);
-    } else if (window.lastCity) {
-        getAllWeather(window.lastCity);
-    }
-});
+    unitToggle.addEventListener('change', () => {
+        currentUnits = unitToggle.checked ? 'imperial' : 'metric';
+        unitLabel.textContent = unitToggle.checked ? '°F' : '°C';
+        // Re-fetch weather for current city or location
+        if (window.lastCoords) {
+            getAllWeatherByCoords(window.lastCoords.lat, window.lastCoords.lon);
+        } else if (window.lastCity) {
+            getAllWeather(window.lastCity);
+        }
+    });
 
-searchBtn.addEventListener('click', () => {
-    const city = cityInput.value.trim();
-    if (city) {
-        getAllWeather(city);
-    }
-});
-
-cityInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
+    searchBtn.addEventListener('click', () => {
         const city = cityInput.value.trim();
         if (city) {
             getAllWeather(city);
         }
-    }
-});
-
-locationBtn.addEventListener('click', getLocationWeather);
-
-// Dark mode toggle
-if (window.localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
-    darkModeToggle.checked = true;
-}
-darkModeToggle.addEventListener('change', () => {
-    document.body.classList.toggle('dark-mode');
-    window.localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-});
-
-// Add Leaflet.js script dynamically if not present
-if (!window.L) {
-    const leafletCss = document.createElement('link');
-    leafletCss.rel = 'stylesheet';
-    leafletCss.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-    document.head.appendChild(leafletCss);
-    const leafletScript = document.createElement('script');
-    leafletScript.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-    document.body.appendChild(leafletScript);
-}
-
-// Voice Search (Web Speech API)
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    micBtn.addEventListener('click', () => {
-        recognition.start();
-        micBtn.classList.add('listening');
     });
 
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        cityInput.value = transcript;
-        getAllWeather(transcript);
-        micBtn.classList.remove('listening');
-    };
-    recognition.onend = () => {
-        micBtn.classList.remove('listening');
-    };
-    recognition.onerror = () => {
-        micBtn.classList.remove('listening');
-    };
-} else {
-    micBtn.style.display = 'none';
-}
+    cityInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const city = cityInput.value.trim();
+            if (city) {
+                getAllWeather(city);
+            }
+        }
+    });
+
+    locationBtn.addEventListener('click', getLocationWeather);
+
+    // Dark mode toggle
+    if (window.localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        darkModeToggle.checked = true;
+    }
+    darkModeToggle.addEventListener('change', () => {
+        document.body.classList.toggle('dark-mode');
+        window.localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+
+    // Add Leaflet.js script dynamically if not present
+    if (!window.L) {
+        const leafletCss = document.createElement('link');
+        leafletCss.rel = 'stylesheet';
+        leafletCss.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(leafletCss);
+        const leafletScript = document.createElement('script');
+        leafletScript.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        document.body.appendChild(leafletScript);
+    }
+
+    // Voice Search (Web Speech API)
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        micBtn.addEventListener('click', () => {
+            recognition.start();
+            micBtn.classList.add('listening');
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            cityInput.value = transcript;
+            getAllWeather(transcript);
+            micBtn.classList.remove('listening');
+        };
+        recognition.onend = () => {
+            micBtn.classList.remove('listening');
+        };
+        recognition.onerror = () => {
+            micBtn.classList.remove('listening');
+        };
+    } else {
+        micBtn.style.display = 'none';
+    }
+});
 
 function showSpinner() {
     spinner.style.display = 'block';
@@ -677,8 +726,6 @@ async function renderFavoritesDashboard() {
 }
 
 // --- Map Feature ---
-let mainMap = null;
-let mainMapMarker = null;
 function showMainMap(lat, lon) {
     // Wait for Leaflet to be loaded
     if (typeof L === 'undefined') {
