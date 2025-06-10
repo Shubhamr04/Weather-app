@@ -43,7 +43,7 @@ let humidityChart = null;
 let compareChartInstance = null;
 
 // API Base URL
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'https://weather-app-pi-nine-56.vercel.app/api';
 
 let currentUnits = 'metric';
 
@@ -89,7 +89,7 @@ window.addEventListener('DOMContentLoaded', () => {
     let compareChartInstance = null;
 
     // API Base URL
-    const API_BASE_URL = 'http://localhost:3000/api';
+    const API_BASE_URL = 'https://weather-app-pi-nine-56.vercel.app/api';
 
     let currentUnits = 'metric';
 
