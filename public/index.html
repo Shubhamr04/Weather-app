@@ -291,6 +291,14 @@
     <div id="spinner" class="spinner" style="display:none;"></div>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
+        const params = new URLSearchParams(window.location.search);
+        const city = params.get('city');
+        const lat = params.get('lat');
+        const lon = params.get('lon');
+        if (!city && (!lat || !lon)) {
+            window.location.replace('landing.html');
+        }
+
         // Initialize particles
         particlesJS('particles-js', {
             particles: {
@@ -351,17 +359,6 @@
                 window.location.href = 'landing.html';
             }, 500);
         }
-
-        // Your existing script content...
-        (function() {
-            const params = new URLSearchParams(window.location.search);
-            const city = params.get('city');
-            const lat = params.get('lat');
-            const lon = params.get('lon');
-            if (!city && (!lat || !lon)) {
-                window.location.href = 'landing.html';
-            }
-        })();
 
         // Dark mode toggle button logic
         const darkModeToggleBtn = document.getElementById('darkModeToggleBtn');
