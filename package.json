@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "A beautiful weather application with 7-day forecast and detailed weather information",
   "type": "module",
-<<<<<<< HEAD
-
-=======
->>>>>>> cd03969223f267626bc4cb58fc0586ab28d0128a
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
