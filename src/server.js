@@ -12,9 +12,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Serve landing.html as the default page
+// Serve index.html as the default page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/landing.html'));
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // OpenWeatherMap API configuration
