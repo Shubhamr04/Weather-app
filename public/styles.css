@@ -5,12 +5,24 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
 body {
+    flex: 1 0 auto;
     min-height: 100vh;
     background: linear-gradient(45deg,#1a2a6c, #b21f1f, #fdbb2d);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
     color: white;
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes gradientBG {
@@ -586,4 +598,24 @@ body.bg-mist {
     .sidebar-lower {
         margin-top: 40px;
     }
+}
+
+.footer {
+    width: 100%;
+    text-align: center;
+    padding: 1.2rem 0;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-size: 1rem;
+    z-index: 100;
+    margin-top: auto;
+    position: static;
+}
+.footer a {
+    color: #ffb347;
+    text-decoration: none;
+    margin: 0 0.5em;
+}
+.footer a:hover {
+    text-decoration: underline;
 } 
