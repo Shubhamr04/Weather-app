@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WeatherGlobe</title>
   <style>
     body, html {
@@ -10,14 +10,13 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      overflow-x: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: black;
       color: white;
     }
 
     #globeViz {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
@@ -26,13 +25,13 @@
     }
 
     .title {
-      position: fixed;
-      top: 2rem;
+      position: absolute;
+      top: 2.2rem;
       left: 50%;
       transform: translateX(-50%);
       z-index: 2;
       text-align: center;
-      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-size: 3.4rem;
       font-weight: 900;
       color: #fff;
       font-family: 'SF Pro Rounded', 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
@@ -45,18 +44,16 @@
       opacity: 0;
       animation: fadeIn 1s ease forwards;
       border-radius: 28px;
-      padding: 0.35em 1.5em 0.45em 1.5em;
+      padding: 0.35em 2.2em 0.45em 2.2em;
       box-shadow: 0 4px 32px 0 rgba(0,0,0,0.07);
       margin-bottom: 0.5em;
-      width: 90%;
-      max-width: 600px;
     }
 
     .title span {
       display: block;
-      font-size: clamp(0.8rem, 2vw, 1.02rem);
+      font-size: 1.02rem;
       font-weight: 400;
-      margin-top: 0.8rem;
+      margin-top: 1.1rem;
       opacity: 0.92;
       color: #b2eaff;
       font-family: 'SF Pro Text', 'SF Pro Rounded', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
@@ -76,14 +73,13 @@
     }
 
     .content {
-      position: fixed;
+      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 1;
       text-align: center;
-      width: 90%;
-      max-width: 600px;
+      width: 100%;
       transition: opacity 0.5s ease;
     }
 
@@ -96,14 +92,12 @@
       display: flex;
       justify-content: center;
       gap: 1rem;
-      flex-wrap: wrap;
       margin-bottom: 2rem;
-      width: 100%;
     }
 
     .buttons button {
-      padding: 0.8rem 1.5rem;
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
       border: none;
       border-radius: 20px;
       cursor: pointer;
@@ -113,8 +107,6 @@
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
-      width: 100%;
-      max-width: 200px;
     }
 
     .buttons button:hover {
@@ -144,10 +136,7 @@
     .search-container {
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
       gap: 1rem;
-      width: 100%;
-      padding: 0 1rem;
     }
 
     .search-container input {
@@ -155,8 +144,7 @@
       border-radius: 10px;
       border: none;
       font-size: 1rem;
-      width: 100%;
-      max-width: 300px;
+      width: 200px;
       background: rgba(255, 255, 255, 0.1);
       color: white;
       backdrop-filter: blur(10px);
@@ -178,8 +166,6 @@
       background: rgba(0, 123, 255, 0.6);
       color: white;
       transition: all 0.3s ease;
-      width: 100%;
-      max-width: 300px;
     }
 
     .search-container button:hover {
@@ -189,21 +175,54 @@
     }
 
     @media (max-width: 768px) {
+      html, body {
+        overflow-x: hidden;
+      }
+
       .title {
+        position: fixed;
         top: 1rem;
+        font-size: clamp(2rem, 5vw, 3.4rem);
         padding: 0.25em 1em 0.35em 1em;
+        width: 90%;
+        max-width: 600px;
+      }
+
+      .title span {
+        font-size: clamp(0.8rem, 2vw, 1.02rem);
+        margin-top: 0.8rem;
       }
 
       .content {
+        position: fixed;
         top: 45%;
+        width: 90%;
+        max-width: 600px;
       }
 
       .buttons {
+        flex-wrap: wrap;
         gap: 0.5rem;
       }
 
+      .buttons button {
+        width: 100%;
+        max-width: 200px;
+        padding: 0.8rem 1.5rem;
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+      }
+
       .search-container {
+        flex-direction: column;
+        align-items: center;
         gap: 0.5rem;
+        padding: 0 1rem;
+      }
+
+      .search-container input,
+      .search-container button {
+        width: 100%;
+        max-width: 300px;
       }
     }
 
