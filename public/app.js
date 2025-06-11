@@ -650,31 +650,25 @@ function saveSearchHistory(city) {
     history.unshift(city);
     if (history.length > 5) history = history.slice(0, 5);
     localStorage.setItem('searchHistory', JSON.stringify(history));
-    renderSearchHistory();
+    // Only update dropdown menu now
+    window.dispatchEvent(new Event('recentSearchesUpdated'));
 }
 function renderSearchHistory() {
-    let history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
-    searchHistoryList.innerHTML = '';
-    history.forEach(city => {
-        const li = document.createElement('li');
-        li.textContent = city;
-        li.onclick = () => getAllWeather(city);
-        searchHistoryList.appendChild(li);
-    });
+    // No-op: handled by dropdown menu
 }
 function saveBookmark(city) {
     let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
     if (!bookmarks.includes(city)) {
         bookmarks.push(city);
         localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-        renderBookmarks();
+        window.dispatchEvent(new Event('bookmarkedCitiesUpdated'));
     }
 }
 function removeBookmark(city) {
     let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
     bookmarks = bookmarks.filter(c => c !== city);
     localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-    renderBookmarks();
+    window.dispatchEvent(new Event('bookmarkedCitiesUpdated'));
 }
 function renderBookmarks() {
     let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
