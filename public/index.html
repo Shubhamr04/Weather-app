@@ -358,56 +358,6 @@
   </style>
 </head>
 <body>
-  <!-- Advanced Dropdown Menu Button and Menu -->
-  <div class="dropdown-menu-container">
-    <button id="dropdownMenuBtn" aria-label="Open menu" class="dropdown-menu-btn">
-      <span class="menu-icon">&#9776;</span>
-    </button>
-    <nav id="dropdownMenu" class="dropdown-menu">
-      <div class="dropdown-section collapsible" data-section="recent">
-        <div class="dropdown-section-header">Recent Searches <span class="arrow">&#9662;</span></div>
-        <ul class="dropdown-list recent-searches-list">
-          <!-- JS will populate -->
-        </ul>
-      </div>
-      <div class="dropdown-section collapsible" data-section="bookmarks">
-        <div class="dropdown-section-header">Bookmarked Cities <span class="arrow">&#9662;</span></div>
-        <ul class="dropdown-list bookmarked-cities-list">
-          <!-- JS will populate -->
-        </ul>
-      </div>
-      <div class="dropdown-section">
-        <button class="clear-history-btn">Clear History</button>
-      </div>
-      <div class="dropdown-section collapsible" data-section="settings">
-        <div class="dropdown-section-header">Settings <span class="arrow">&#9662;</span></div>
-        <div class="dropdown-settings">
-          <label><input type="checkbox" id="darkModeToggle"> Dark Mode</label><br>
-          <label>Units:
-            <select id="unitSelect">
-              <option value="metric">°C</option>
-              <option value="imperial">°F</option>
-            </select>
-          </label><br>
-          <label>Language:
-            <select id="langSelect">
-              <option value="en">English</option>
-              <option value="hi">Hindi</option>
-              <option value="es">Spanish</option>
-              <!-- Add more as needed -->
-            </select>
-          </label>
-        </div>
-      </div>
-      <div class="dropdown-section">
-        <a href="#about" class="dropdown-link">About / Help</a>
-      </div>
-      <div class="dropdown-section">
-        <a href="#feedback" class="dropdown-link">Feedback</a>
-      </div>
-    </nav>
-  </div>
-
   <div class="loading">
     <div class="loading-spinner"></div>
   </div>
@@ -440,8 +390,6 @@
       <button onclick="searchByCoords()">Search by Coords</button>
     </div>
   </div>
-
-  
 
   <script src="https://unpkg.com/three@0.150.1/build/three.min.js"></script>
   <script src="https://unpkg.com/globe.gl"></script>
