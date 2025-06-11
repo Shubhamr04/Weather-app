@@ -905,3 +905,35 @@ function addBookmarkFavoriteButtons(city) {
   window.addEventListener('bookmarkedCitiesUpdated', updateMenu);
 
 })();
+
+// Feedback Modal Logic
+window.addEventListener('DOMContentLoaded', function() {
+  const feedbackBtn = document.getElementById('feedbackBtn');
+  const feedbackModal = document.getElementById('feedbackModal');
+  const closeFeedbackModal = document.getElementById('closeFeedbackModal');
+  const feedbackForm = document.getElementById('feedbackForm');
+  const feedbackSuccess = document.getElementById('feedbackSuccess');
+
+  if (feedbackBtn && feedbackModal && closeFeedbackModal && feedbackForm && feedbackSuccess) {
+    feedbackBtn.addEventListener('click', function(e) {
+      feedbackModal.style.display = 'flex';
+      feedbackSuccess.style.display = 'none';
+      feedbackForm.reset();
+    });
+    closeFeedbackModal.addEventListener('click', function() {
+      feedbackModal.style.display = 'none';
+    });
+    feedbackModal.addEventListener('click', function(e) {
+      if (e.target === feedbackModal) feedbackModal.style.display = 'none';
+    });
+    feedbackForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      feedbackSuccess.style.display = 'block';
+      setTimeout(() => {
+        feedbackModal.style.display = 'none';
+      }, 1800);
+    });
+  } else {
+    console.log('Feedback modal elements not found:', {feedbackBtn, feedbackModal, closeFeedbackModal, feedbackForm, feedbackSuccess});
+  }
+});

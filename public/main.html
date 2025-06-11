@@ -199,7 +199,7 @@
                 <a href="#about" class="dropdown-link">About / Help</a>
             </div>
             <div class="dropdown-section">
-                <a href="#feedback" class="dropdown-link">Feedback</a>
+                <button id="feedbackBtn" class="dropdown-link" type="button">Send Feedback / Report a Bug</button>
             </div>
         </nav>
     </div>
@@ -430,5 +430,19 @@
             <a href="https://github.com/Shubhamr04/Weather-app" target="_blank">GitHub</a>
         </p>
     </footer>
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); z-index:3000; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:#fff; color:#222; border-radius:14px; max-width:350px; width:90vw; padding:1.5rem 1.2rem; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
+            <button id="closeFeedbackModal" style="position:absolute; top:0.7rem; right:0.7rem; background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;">&times;</button>
+            <h3 style="margin-top:0;">Send Feedback / Report a Bug</h3>
+            <form id="feedbackForm">
+                <input type="text" name="name" placeholder="Your Name (optional)" style="width:100%;margin-bottom:0.7rem;padding:0.5rem;border-radius:6px;border:1px solid #ddd;">
+                <input type="email" name="email" placeholder="Your Email (optional)" style="width:100%;margin-bottom:0.7rem;padding:0.5rem;border-radius:6px;border:1px solid #ddd;">
+                <textarea name="message" placeholder="Your feedback or bug report..." required style="width:100%;min-height:80px;margin-bottom:0.7rem;padding:0.5rem;border-radius:6px;border:1px solid #ddd;"></textarea>
+                <button type="submit" style="background:#4a5cff;color:#fff;border:none;border-radius:8px;padding:0.5rem 1.2rem;font-weight:600;cursor:pointer;width:100%;">Send</button>
+            </form>
+            <div id="feedbackSuccess" style="display:none;color:#388e3c;margin-top:0.7rem;text-align:center;">Thank you for your feedback!</div>
+        </div>
+    </div>
 </body>
 </html> 
