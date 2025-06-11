@@ -786,3 +786,66 @@ function addBookmarkFavoriteButtons(city) {
     };
     btnContainer.appendChild(btn);
 }
+
+// Advanced Dropdown Menu Logic
+(function() {
+  const menuBtn = document.getElementById('dropdownMenuBtn');
+  const menu = document.getElementById('dropdownMenu');
+  const collapsibles = menu.querySelectorAll('.collapsible');
+  let isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+  // Toggle menu open/close
+  menuBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    menu.classList.toggle('open');
+  });
+
+  // Collapse/expand sections
+  collapsibles.forEach(section => {
+    const header = section.querySelector('.dropdown-section-header');
+    header.addEventListener('click', function(e) {
+      section.classList.toggle('collapsed');
+    });
+    // Start collapsed on mobile
+    if (isMobile) section.classList.add('collapsed');
+  });
+
+  // Close menu on outside click
+  document.addEventListener('click', function(e) {
+    if (!menu.contains(e.target) && !menuBtn.contains(e.target)) {
+      menu.classList.remove('open');
+    }
+  });
+
+  // Close menu on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') menu.classList.remove('open');
+  });
+
+  // Auto-close on mobile after selection
+  menu.addEventListener('click', function(e) {
+    if (isMobile && e.target.closest('a,button')) {
+      menu.classList.remove('open');
+    }
+  });
+
+  // Optional: update isMobile on resize
+  window.addEventListener('resize', function() {
+    isMobile = window.matchMedia('(max-width: 768px)').matches;
+  });
+
+  // Example: populate with dummy data (replace with real data as needed)
+  const recentList = menu.querySelector('.recent-searches-list');
+  const bookmarksList = menu.querySelector('.bookmarked-cities-list');
+  const dummyRecent = ['New Delhi', 'Adishi', 'London'];
+  const dummyBookmarks = ['Tokyo', 'Paris'];
+  recentList.innerHTML = dummyRecent.map(city => `<li>${city}</li>`).join('');
+  bookmarksList.innerHTML = dummyBookmarks.map(city => `<li>${city}</li>`).join('');
+
+  // Clear history button
+  const clearBtn = menu.querySelector('.clear-history-btn');
+  clearBtn.addEventListener('click', function() {
+    recentList.innerHTML = '';
+    // Optionally clear from storage
+  });
+})();
