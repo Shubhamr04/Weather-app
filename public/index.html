@@ -2,34 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>WeatherGlobe</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden;
+      width: 100%;
+      overflow-x: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: black;
       color: white;
     }
 
     #globeViz {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
       z-index: 0;
     }
 
     .title {
-      position: absolute;
-      top: 2.2rem;
+      position: fixed;
+      top: 2rem;
       left: 50%;
       transform: translateX(-50%);
       z-index: 2;
       text-align: center;
-      font-size: 3.4rem;
+      font-size: clamp(2rem, 5vw, 3.4rem);
       font-weight: 900;
       color: #fff;
       font-family: 'SF Pro Rounded', 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
@@ -42,16 +45,18 @@
       opacity: 0;
       animation: fadeIn 1s ease forwards;
       border-radius: 28px;
-      padding: 0.35em 2.2em 0.45em 2.2em;
+      padding: 0.35em 1.5em 0.45em 1.5em;
       box-shadow: 0 4px 32px 0 rgba(0,0,0,0.07);
       margin-bottom: 0.5em;
+      width: 90%;
+      max-width: 600px;
     }
 
     .title span {
       display: block;
-      font-size: 1.02rem;
+      font-size: clamp(0.8rem, 2vw, 1.02rem);
       font-weight: 400;
-      margin-top: 1.1rem;
+      margin-top: 0.8rem;
       opacity: 0.92;
       color: #b2eaff;
       font-family: 'SF Pro Text', 'SF Pro Rounded', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
@@ -71,13 +76,14 @@
     }
 
     .content {
-      position: absolute;
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 1;
       text-align: center;
-      width: 100%;
+      width: 90%;
+      max-width: 600px;
       transition: opacity 0.5s ease;
     }
 
@@ -92,11 +98,12 @@
       gap: 1rem;
       flex-wrap: wrap;
       margin-bottom: 2rem;
+      width: 100%;
     }
 
     .buttons button {
-      padding: 1rem 2rem;
-      font-size: 1.1rem;
+      padding: 0.8rem 1.5rem;
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
       border: none;
       border-radius: 20px;
       cursor: pointer;
@@ -106,6 +113,8 @@
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
+      width: 100%;
+      max-width: 200px;
     }
 
     .buttons button:hover {
@@ -137,6 +146,8 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 1rem;
+      width: 100%;
+      padding: 0 1rem;
     }
 
     .search-container input {
@@ -144,7 +155,8 @@
       border-radius: 10px;
       border: none;
       font-size: 1rem;
-      width: 200px;
+      width: 100%;
+      max-width: 300px;
       background: rgba(255, 255, 255, 0.1);
       color: white;
       backdrop-filter: blur(10px);
@@ -166,12 +178,47 @@
       background: rgba(0, 123, 255, 0.6);
       color: white;
       transition: all 0.3s ease;
+      width: 100%;
+      max-width: 300px;
     }
 
     .search-container button:hover {
       background: rgba(0, 123, 255, 0.9);
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .title {
+        top: 1rem;
+        padding: 0.25em 1em 0.35em 1em;
+      }
+
+      .content {
+        top: 45%;
+      }
+
+      .buttons {
+        gap: 0.5rem;
+      }
+
+      .search-container {
+        gap: 0.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .title {
+        top: 0.5rem;
+      }
+
+      .content {
+        top: 40%;
+      }
+
+      .buttons button {
+        padding: 0.7rem 1.2rem;
+      }
     }
 
     /* Loading animation */
@@ -199,7 +246,7 @@
       height: 50px;
       border: 3px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
-      border-top-color: aqua;
+      border-top-color: white;
       animation: spin 1s linear infinite;
     }
 
