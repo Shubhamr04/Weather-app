@@ -794,10 +794,41 @@ function addBookmarkFavoriteButtons(city) {
   const collapsibles = menu.querySelectorAll('.collapsible');
   let isMobile = window.matchMedia('(max-width: 768px)').matches;
 
+  // Helper: Get/set localStorage arrays
+  function getArray(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key)) || [];
+    } catch { return []; }
+  }
+  function setArray(key, arr) {
+    localStorage.setItem(key, JSON.stringify(arr));
+  }
+
+  // Render lists
+  function renderList(listEl, arr, emptyMsg) {
+    if (!arr.length) {
+      listEl.innerHTML = `<li style='color:#888;font-style:italic;'>${emptyMsg}</li>`;
+    } else {
+      listEl.innerHTML = arr.map(city => `<li>${city}</li>`).join('');
+    }
+  }
+
+  // Update menu lists
+  function updateMenu() {
+    const recentList = menu.querySelector('.recent-searches-list');
+    const bookmarksList = menu.querySelector('.bookmarked-cities-list');
+    renderList(recentList, getArray('recentSearches'), 'No recent searches');
+    renderList(bookmarksList, getArray('bookmarkedCities'), 'No bookmarks');
+  }
+
+  // Initial render
+  updateMenu();
+
   // Toggle menu open/close
   menuBtn.addEventListener('click', function(e) {
     e.stopPropagation();
     menu.classList.toggle('open');
+    updateMenu(); // Always update when opening
   });
 
   // Collapse/expand sections
@@ -806,7 +837,6 @@ function addBookmarkFavoriteButtons(city) {
     header.addEventListener('click', function(e) {
       section.classList.toggle('collapsed');
     });
-    // Start collapsed on mobile
     if (isMobile) section.classList.add('collapsed');
   });
 
@@ -834,18 +864,20 @@ function addBookmarkFavoriteButtons(city) {
     isMobile = window.matchMedia('(max-width: 768px)').matches;
   });
 
-  // Example: populate with dummy data (replace with real data as needed)
-  const recentList = menu.querySelector('.recent-searches-list');
-  const bookmarksList = menu.querySelector('.bookmarked-cities-list');
-  const dummyRecent = ['New Delhi', 'Adishi', 'London'];
-  const dummyBookmarks = ['Tokyo', 'Paris'];
-  recentList.innerHTML = dummyRecent.map(city => `<li>${city}</li>`).join('');
-  bookmarksList.innerHTML = dummyBookmarks.map(city => `<li>${city}</li>`).join('');
-
   // Clear history button
   const clearBtn = menu.querySelector('.clear-history-btn');
   clearBtn.addEventListener('click', function() {
-    recentList.innerHTML = '';
-    // Optionally clear from storage
+    setArray('recentSearches', []);
+    updateMenu();
   });
+
+  // Listen for app events to update menu live
+  window.addEventListener('recentSearchesUpdated', updateMenu);
+  window.addEventListener('bookmarkedCitiesUpdated', updateMenu);
+
+  // Optionally, patch your app's search/bookmark logic to dispatch these events after updating localStorage
+  // Example:
+  // window.dispatchEvent(new Event('recentSearchesUpdated'));
+  // window.dispatchEvent(new Event('bookmarkedCitiesUpdated'));
+
 })();
