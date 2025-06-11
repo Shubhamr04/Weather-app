@@ -848,9 +848,16 @@ body.bg-mist {
   padding: 0.2rem 0;
   border-bottom: 1px solid #eee;
   font-size: 0.97rem;
+  transition: background 0.18s, transform 0.18s;
+  cursor: pointer;
 }
 .dropdown-list li:last-child {
   border-bottom: none;
+}
+.dropdown-list li:hover {
+  background: #f0f8ff;
+  transform: scale(1.04);
+  color: #0077cc;
 }
 .clear-history-btn {
   background: #ffb84d;

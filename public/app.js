@@ -194,6 +194,16 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
         micBtn.style.display = 'none';
     }
+
+    // Re-attach search button event listener after all overrides
+    if (searchBtn) {
+        searchBtn.onclick = () => {
+            const city = cityInput.value.trim();
+            if (city) {
+                getAllWeather(city);
+            }
+        };
+    }
 });
 
 function showSpinner() {
