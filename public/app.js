@@ -867,6 +867,14 @@ function addBookmarkFavoriteButtons(city) {
       updateMenu();
       e.stopPropagation();
     }
+    // Click on city name in recent searches or bookmarks
+    if (e.target.tagName === 'LI' && (e.target.parentElement.classList.contains('recent-searches-list') || e.target.parentElement.classList.contains('bookmarked-cities-list'))) {
+      const city = e.target.childNodes[0].nodeValue.trim();
+      if (city) {
+        getAllWeather(city);
+        menu.classList.remove('open');
+      }
+    }
   });
 
   // Optional: update isMobile on resize
