@@ -222,6 +222,8 @@ async function getAllWeather(city) {
         saveSearchHistory(city);
         addBookmarkFavoriteButtons(city);
         hideSpinner();
+        window.dispatchEvent(new Event('recentSearchesUpdated'));
+        window.dispatchEvent(new Event('bookmarkedCitiesUpdated'));
     } catch (error) {
         hideSpinner();
         console.error('Weather fetch error:', error);
@@ -247,6 +249,8 @@ async function getAllWeatherByCoords(lat, lon) {
         showMainMap(lat, lon);
         saveSearchHistory(currentData.location.name);
         hideSpinner();
+        window.dispatchEvent(new Event('recentSearchesUpdated'));
+        window.dispatchEvent(new Event('bookmarkedCitiesUpdated'));
     } catch (error) {
         hideSpinner();
         console.error('Weather fetch error:', error);
@@ -768,14 +772,11 @@ function addBookmarkFavoriteButtons(city) {
     btn.style.fontWeight = 'bold';
     btn.style.cursor = 'pointer';
     btn.onclick = function() {
-        let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
         if (isBookmarked) {
-            bookmarks = bookmarks.filter(c => c !== city);
+            removeBookmark(city);
         } else {
-            bookmarks.push(city);
+            saveBookmark(city);
         }
-        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-        renderBookmarks();
         addBookmarkFavoriteButtons(city); // re-render button
     };
     btnContainer.appendChild(btn);
@@ -799,11 +800,13 @@ function addBookmarkFavoriteButtons(city) {
   }
 
   // Render lists
-  function renderList(listEl, arr, emptyMsg) {
+  function renderList(listEl, arr, emptyMsg, isBookmark) {
     if (!arr.length) {
       listEl.innerHTML = `<li style='color:#888;font-style:italic;'>${emptyMsg}</li>`;
     } else {
-      listEl.innerHTML = arr.map(city => `<li>${city}</li>`).join('');
+      listEl.innerHTML = arr.map(city =>
+        `<li>${city} ${isBookmark ? `<button class='remove-bookmark-btn' data-city='${city}' title='Remove' style='margin-left:8px; background:none; border:none; color:#d32f2f; font-size:1.1em; cursor:pointer;'>&#10006;</button>` : ''}</li>`
+      ).join('');
     }
   }
 
@@ -811,8 +814,8 @@ function addBookmarkFavoriteButtons(city) {
   function updateMenu() {
     const recentList = menu.querySelector('.recent-searches-list');
     const bookmarksList = menu.querySelector('.bookmarked-cities-list');
-    renderList(recentList, getArray('recentSearches'), 'No recent searches');
-    renderList(bookmarksList, getArray('bookmarkedCities'), 'No bookmarks');
+    renderList(recentList, getArray('searchHistory'), 'No recent searches', false);
+    renderList(bookmarksList, getArray('bookmarks'), 'No bookmarks', true);
   }
 
   // Initial render
@@ -853,6 +856,19 @@ function addBookmarkFavoriteButtons(city) {
     }
   });
 
+  // Remove bookmark from dropdown
+  menu.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-bookmark-btn')) {
+      const city = e.target.getAttribute('data-city');
+      let bookmarks = getArray('bookmarks');
+      bookmarks = bookmarks.filter(c => c !== city);
+      setArray('bookmarks', bookmarks);
+      window.dispatchEvent(new Event('bookmarkedCitiesUpdated'));
+      updateMenu();
+      e.stopPropagation();
+    }
+  });
+
   // Optional: update isMobile on resize
   window.addEventListener('resize', function() {
     isMobile = window.matchMedia('(max-width: 768px)').matches;
@@ -861,17 +877,13 @@ function addBookmarkFavoriteButtons(city) {
   // Clear history button
   const clearBtn = menu.querySelector('.clear-history-btn');
   clearBtn.addEventListener('click', function() {
-    setArray('recentSearches', []);
+    setArray('searchHistory', []);
+    window.dispatchEvent(new Event('recentSearchesUpdated'));
     updateMenu();
   });
 
   // Listen for app events to update menu live
   window.addEventListener('recentSearchesUpdated', updateMenu);
   window.addEventListener('bookmarkedCitiesUpdated', updateMenu);
-
-  // Optionally, patch your app's search/bookmark logic to dispatch these events after updating localStorage
-  // Example:
-  // window.dispatchEvent(new Event('recentSearchesUpdated'));
-  // window.dispatchEvent(new Event('bookmarkedCitiesUpdated'));
 
 })();
